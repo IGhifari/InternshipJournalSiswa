@@ -366,8 +366,10 @@ export default function Jurnal() {
                     className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
                     required
                   />
+                  <div>
+                      <p className='text-yellow-500'>pastikan nama anda sesuai dengan nama lengkap anda</p>
+                  </div>
                 </div>
-
                 <div>
                   <label
                     htmlFor="class"

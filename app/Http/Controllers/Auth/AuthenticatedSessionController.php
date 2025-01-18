@@ -41,7 +41,7 @@ class AuthenticatedSessionController extends Controller
             // Redirect ke dashboard (gunakan Inertia untuk redirect)
             return Inertia::location('/siswa/dashboard');
         }
- }
+}
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
