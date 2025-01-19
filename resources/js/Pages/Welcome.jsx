@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import Navbar from './navbar';
 import Gambar from '@/assets/pkl.jpg';
+import Footer from '@/Components/footer';
 
 export default function Welcome({ auth }) {
     return (
@@ -14,7 +15,7 @@ export default function Welcome({ auth }) {
                         {/* Left Content */}
                         <div className="w-full md:w-1/2 space-y-8 text-center md:text-left">
                             <div className="space-y-4">
-                                <span className="inline-block px-4 py-2 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-semibold animate-pulse">
+                                <span className="inline-block mr-36 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-semibold animate-pulse text-left md:text-center">
                                     ✨ Platform PKL Terbaik
                                 </span>
                                 <div className="space-y-2">
@@ -112,24 +113,7 @@ export default function Welcome({ auth }) {
                         </div>
                     </div>
                 </main>
-
-                <footer className="bg-white dark:bg-gray-800 shadow-lg mt-20">
-                    <div className="container mx-auto px-4 py-8">
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                            <p className="text-gray-600 dark:text-gray-400">
-                                &copy; {new Date().getFullYear()} Internship Journal. Semua Hak Dilindungi.
-                            </p>
-                            <div className="flex gap-6">
-                                <Link href="/privacy-policy" className="text-gray-600 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors duration-300">
-                                    Kebijakan Privasi
-                                </Link>
-                                <Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors duration-300">
-                                    Tentang Kami
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
+                <Footer/>
             </div>
         </>
     );
