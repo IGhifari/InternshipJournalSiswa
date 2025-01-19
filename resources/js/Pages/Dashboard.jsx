@@ -11,73 +11,90 @@ export default function Dashboard() {
         <AuthenticatedLayout
             header={
                 <h2 className="font-semibold text-sm md:text-base text-gray-800 dark:text-gray-200 leading-tight">
-                    Selamat Datang {user.name} <br />
-                    Anda Sekarang sedang prakerin di {user.company ? user.company.company : 'Belum Ditentukan'}
+                    <span className="text-indigo-600 dark:text-indigo-400">Selamat Datang</span> {user.name} <br />
+                    Anda Sekarang sedang prakerin di <span className="text-emerald-600 dark:text-emerald-400">{user.company ? user.company.company : 'Belum Ditentukan'}</span>
                 </h2>
             }
         >
             <Head title="Dashboard" />
 
             <div className="py-12 text-sm px-4 md:px-0">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-8xl sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-semibold mb-4">Ringkasan Aktivitas</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div className="bg-blue-500 text-white p-4 rounded-lg shadow-md">
-                                    <h4 className="text-lg font-semibold">Jurnal Terbaru</h4>
-                                    <ul>
+                            <h3 className="text-xl font-bold mb-6 text-indigo-700 dark:text-indigo-400">Ringkasan Aktivitas</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <h4 className="text-lg font-bold mb-4 flex items-center">
+                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        Jurnal Terbaru
+                                    </h4>
+                                    <ul className="space-y-2">
                                         {recentJournals.length > 0 ? (
                                             recentJournals.map(journal => (
-                                                <li key={journal.id}>{journal.title} - {journal.date}</li>
+                                                <li key={journal.id} className="p-2 bg-white/10 rounded-lg">{journal.title} - {journal.date}</li>
                                             ))
                                         ) : (
-                                            <li>Tidak ada jurnal terbaru</li>
+                                            <li className="p-2 bg-white/10 rounded-lg">Tidak ada jurnal terbaru</li>
                                         )}
                                     </ul>
                                 </div>
-                                <div className="bg-green-500 text-white p-4 rounded-lg shadow-md">
-                                    <h4 className="text-lg font-semibold">Absensi Terbaru</h4>
-                                    <ul>
+                                <div className="bg-gradient-to-br from-emerald-500 to-green-600 text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <h4 className="text-lg font-bold mb-4 flex items-center">
+                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        Absensi Terbaru
+                                    </h4>
+                                    <ul className="space-y-2">
                                         {recentAbsensi.length > 0 ? (
                                             recentAbsensi.map(absen => (
-                                                <li key={absen.id}>{absen.date} - {absen.information}</li>
+                                                <li key={absen.id} className="p-2 bg-white/10 rounded-lg">{absen.date} - {absen.information}</li>
                                             ))
                                         ) : (
-                                            <li>Tidak ada absensi terbaru</li>
+                                            <li className="p-2 bg-white/10 rounded-lg">Tidak ada absensi terbaru</li>
                                         )}
                                     </ul>
                                 </div>
-                                <div className="bg-yellow-500 text-white p-4 rounded-lg shadow-md">
-                                    <h4 className="text-lg font-semibold">Statistik</h4>
-                                    <ul>
-                                        <li>Hari Prakerin: {statistics.days || 0}</li>
-                                        <li>Jurnal Ditulis: {statistics.journals || 0}</li>
-                                        <li>Kehadiran: {statistics.attendance || 0}</li>
+                                <div className="bg-gradient-to-br from-amber-500 to-yellow-600 text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <h4 className="text-lg font-bold mb-4 flex items-center">
+                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                        Statistik
+                                    </h4>
+                                    <ul className="space-y-2">
+                                        <li className="p-2 bg-white/10 rounded-lg">Hari Prakerin: {statistics.days || 0}</li>
+                                        <li className="p-2 bg-white/10 rounded-lg">Jurnal Ditulis: {statistics.journals || 0}</li>
+                                        <li className="p-2 bg-white/10 rounded-lg">Kehadiran: {statistics.attendance || 0}</li>
                                     </ul>
                                 </div>
                             </div>
-                            <h3 className="text-lg font-semibold mt-8 mb-4">Tugas atau Pengingat</h3>
-                            <div className="bg-red-500 text-white p-4 rounded-lg shadow-md">
-                                <ul>
+
+                            <h3 className="text-xl font-bold mt-10 mb-6 text-red-700 dark:text-red-400">Tugas atau Pengingat</h3>
+                            <div className="bg-gradient-to-br from-rose-500 to-red-600 text-white p-6 rounded-xl shadow-lg">
+                                <ul className="space-y-2">
                                     {tasks.length > 0 ? (
                                         tasks.map(task => (
-                                            <li key={task.id}>{task.title} - {task.due_date}</li>
+                                            <li key={task.id} className="p-2 bg-white/10 rounded-lg flex items-center">
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                {task.title} - {task.due_date}
+                                            </li>
                                         ))
                                     ) : (
-                                        <li>Tidak ada tugas atau pengingat</li>
+                                        <li className="p-2 bg-white/10 rounded-lg">Tidak ada tugas atau pengingat</li>
                                     )}
                                 </ul>
                             </div>
-                            <h3 className="text-lg font-semibold mt-8 mb-4">Pengumuman</h3>
-                            <div className="bg-purple-500 text-white p-4 rounded-lg shadow-md">
-                                <ul>
+
+                            <h3 className="text-xl font-bold mt-10 mb-6 text-purple-700 dark:text-purple-400">Pengumuman</h3>
+                            <div className="bg-gradient-to-br from-purple-500 to-violet-600 text-white p-6 rounded-xl shadow-lg">
+                                <ul className="space-y-2">
                                     {announcements.length > 0 ? (
                                         announcements.map(announcement => (
-                                            <li key={announcement.id}>{announcement.title} - {announcement.date}</li>
+                                            <li key={announcement.id} className="p-2 bg-white/10 rounded-lg flex items-center">
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                                                {announcement.title} - {announcement.date}
+                                            </li>
                                         ))
                                     ) : (
-                                        <li>Tidak ada pengumuman</li>
+                                        <li className="p-2 bg-white/10 rounded-lg">Tidak ada pengumuman</li>
                                     )}
                                 </ul>
                             </div>
