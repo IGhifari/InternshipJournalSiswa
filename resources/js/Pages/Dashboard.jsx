@@ -7,6 +7,13 @@ export default function Dashboard() {
     const { auth, recentJournals = [], recentAbsensi = [], statistics = {}, tasks = [], announcements = [] } = usePage().props;
     const user = auth.user;
 
+    const pengumuman = {
+        title: 'Pengumuman',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    }
+    
+    
+    
     return (
         <AuthenticatedLayout
             header={
@@ -85,18 +92,14 @@ export default function Dashboard() {
 
                             <h3 className="text-xl font-bold mt-10 mb-6 text-purple-700 dark:text-purple-400">Pengumuman</h3>
                             <div className="bg-gradient-to-br from-purple-500 to-violet-600 text-white p-6 rounded-xl shadow-lg">
-                                <ul className="space-y-2">
-                                    {announcements.length > 0 ? (
-                                        announcements.map(announcement => (
-                                            <li key={announcement.id} className="p-2 bg-white/10 rounded-lg flex items-center">
-                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                                                {announcement.title} - {announcement.date}
-                                            </li>
-                                        ))
-                                    ) : (
-                                        <li className="p-2 bg-white/10 rounded-lg">Tidak ada pengumuman</li>
-                                    )}
-                                </ul>
+                                {pengumuman.title ? (
+                                    <>
+                                        <div className="p-2 bg-white/10 rounded-lg">{pengumuman.title}</div>
+                                        <div className="p-2 bg-white/10 rounded-lg mt-2">{pengumuman.description}</div>
+                                    </>
+                                ) : (
+                                    <div className="p-2 bg-white/10 rounded-lg">Tidak ada pengumuman</div>
+                                )}
                             </div>
                         </div>
                     </div>

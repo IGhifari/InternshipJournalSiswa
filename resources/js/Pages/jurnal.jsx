@@ -16,6 +16,17 @@ export default function Jurnal() {
   // State untuk data jurnal
   const [jurnalDataState, setJurnalDataState] = useState(jurnalData || []);
 
+  // Tambahkan state untuk pencarian
+  const [searchCriteria, setSearchCriteria] = useState({
+    name: '',
+    date: '',
+    supervisor_name: '',
+    activity: ''
+  });
+  
+  // State untuk menyimpan hasil pencarian
+  const [filteredJurnal, setFilteredJurnal] = useState(jurnalData || []);
+
   const [formData, setFormData] = useState({
     name: '',
     class: '',
@@ -29,6 +40,46 @@ export default function Jurnal() {
     localStorage.setItem('jurnalData', JSON.stringify(jurnalDataState));
   }, [jurnalDataState]);
 
+  // Fungsi untuk menangani perubahan input pencarian
+  const handleSearchChange = (field, value) => {
+    setSearchCriteria(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Fungsi untuk melakukan pencarian
+  const handleSearchSubmit = () => {
+    const filtered = jurnalDataState.filter(item => {
+      const nameMatch = item.name.toLowerCase().includes(searchCriteria.name.toLowerCase()) || !searchCriteria.name;
+      const dateMatch = item.date.includes(searchCriteria.date) || !searchCriteria.date;
+      const supervisorMatch = item.supervisor_name.toLowerCase().includes(searchCriteria.supervisor_name.toLowerCase()) || !searchCriteria.supervisor_name;
+      const activityMatch = item.activity.toLowerCase().includes(searchCriteria.activity.toLowerCase()) || !searchCriteria.activity;
+
+      return nameMatch && dateMatch && supervisorMatch && activityMatch;
+    });
+
+    setFilteredJurnal(filtered);
+
+    if (filtered.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Tidak Ada Hasil',
+        text: 'Data yang Anda cari tidak ditemukan',
+      });
+    }
+  };
+
+  // Fungsi untuk mereset pencarian
+  const handleResetSearch = () => {
+    setSearchCriteria({
+      name: '',
+      date: '',
+      supervisor_name: '',
+      activity: ''
+    });
+    setFilteredJurnal(jurnalDataState);
+  };
 
   const handleDownloadPDF = (item) => {
     const doc = new jsPDF();
@@ -479,8 +530,88 @@ export default function Jurnal() {
             </form>
           </div>
         </div>
-        <div className='mx-5 md:mx-10 flex justify-end mt-10'>
-                    <input type="search" placeholder="Seacrh" className="w-80 md:w-96 p-3 border rounded-lg dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300 " />
+        <div className='p-4 md:p-6 lg:p-8'>
+          {/* Search Container */}
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+            
+            {/* Search by Name */}
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Cari nama..." 
+                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors shadow-sm hover:shadow-md"
+                value={searchCriteria.name}
+                onChange={(e) => handleSearchChange('name', e.target.value)}
+              />
+              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+
+            {/* Search by Date */}
+            <div className="relative">
+              <input 
+                type="date" 
+                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors shadow-sm hover:shadow-md"
+                value={searchCriteria.date}
+                onChange={(e) => handleSearchChange('date', e.target.value)}
+              />
+              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            {/* Search by Supervisor */}
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Cari supervisor..." 
+                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors shadow-sm hover:shadow-md"
+                value={searchCriteria.supervisor_name}
+                onChange={(e) => handleSearchChange('supervisor_name', e.target.value)}
+              />
+              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+
+            {/* Search by Activity */}
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Cari kegiatan..." 
+                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors shadow-sm hover:shadow-md"
+                value={searchCriteria.activity}
+                onChange={(e) => handleSearchChange('activity', e.target.value)}
+              />
+              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+
+          </div>
+
+          {/* Buttons Container */}
+          <div className="flex flex-col sm:flex-row justify-center sm:justify-end gap-3 mt-4">
+            <button
+              onClick={handleSearchSubmit}
+              className="w-full sm:w-auto px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Cari
+            </button>
+            <button
+              onClick={handleResetSearch}
+              className="w-full sm:w-auto px-6 py-2.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Reset
+            </button>
+          </div>
         </div>
         <div className='text-white  mx-4 sm:mx-6 lg:mx-8 mt-5'>
           <div className='overflow-x-auto'>
@@ -497,8 +628,8 @@ export default function Jurnal() {
                 </tr>
               </thead>
               <tbody>
-                {jurnalData.length > 0 ? (
-                  jurnalData.map((item) => (
+                {filteredJurnal.length > 0 ? (
+                  filteredJurnal.map((item) => (
                     <tr key={item.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                       <td className="px-6 py-4">{item.name}</td>
                       <td className="px-6 py-4">{item.class}</td>

@@ -20,6 +20,13 @@ export default function Absensi() {
 
     const [absensiList, setAbsensiList] = useState(absensiData);
 
+    // Tambahkan state untuk menyimpan kriteria pencarian
+    const [searchCriteria, setSearchCriteria] = useState({
+        name: '',
+        date: '',
+        information: ''
+    });
+
     // Handle perubahan input
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,6 +36,45 @@ export default function Absensi() {
         });
     };
 
+    // Fungsi untuk menangani perubahan input pencarian
+    const handleSearchChange = (field, value) => {
+        setSearchCriteria(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    // Fungsi untuk melakukan pencarian
+    const handleSearchSubmit = () => {
+        const filteredData = absensiData.filter(item => {
+            const nameMatch = item.name.toLowerCase().includes(searchCriteria.name.toLowerCase()) || !searchCriteria.name;
+            const dateMatch = item.date.includes(searchCriteria.date) || !searchCriteria.date;
+            const informationMatch = item.information === searchCriteria.information || !searchCriteria.information;
+            
+            return nameMatch && dateMatch && informationMatch;
+        });
+        
+        setAbsensiList(filteredData);
+        
+        // Tampilkan pesan jika tidak ada hasil
+        if (filteredData.length === 0) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Tidak Ada Hasil',
+                text: 'Data yang Anda cari tidak ditemukan',
+            });
+        }
+    };
+
+    // Fungsi untuk mereset pencarian
+    const handleResetSearch = () => {
+        setSearchCriteria({
+            name: '',
+            date: '',
+            information: ''
+        });
+        setAbsensiList(absensiData);
+    };
 
     const isWithinAttendanceTime = () => {
         const now = new Date();
@@ -389,8 +435,70 @@ export default function Absensi() {
                         </form>
                     </div>
                 </div>
-                <div className='mx-5 md:mx-10 flex justify-end mt-5'>
-                    <input type="search" placeholder="Seacrh" className="w-80 md:w-96 p-3 border rounded-lg dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300 " />
+                <div className='mx-4 md:mx-8 lg:mx-10 mt-5'>
+                    {/* Search Container */}
+                    <div className="flex flex-col md:flex-row gap-4 justify-end">
+                        {/* Search by Name */}
+                        <div className="relative w-full md:w-64">
+                            <input 
+                                type="text" 
+                                placeholder="Cari nama..." 
+                                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors"
+                                value={searchCriteria.name}
+                                onChange={(e) => handleSearchChange('name', e.target.value)}
+                            />
+                            <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+
+                        {/* Search by Date */}
+                        <div className="relative w-full md:w-64">
+                            <input 
+                                type="date" 
+                                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors"
+                                value={searchCriteria.date}
+                                onChange={(e) => handleSearchChange('date', e.target.value)}
+                            />
+                            <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+
+                        {/* Search by Status */}
+                        <div className="relative w-full md:w-64">
+                            <select
+                                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors appearance-none"
+                                value={searchCriteria.information}
+                                onChange={(e) => handleSearchChange('information', e.target.value)}
+                            >
+                                <option value="">Pilih Status</option>
+                                <option value="Hadir">Hadir</option>
+                                <option value="Izin">Izin</option>
+                                <option value="Sakit">Sakit</option>
+                                <option value="Alfa">Alfa</option>
+                            </select>
+                            <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 w-full md:w-auto">
+                            <button
+                                onClick={handleSearchSubmit}
+                                className="flex-1 md:flex-none px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-300 text-sm font-medium"
+                            >
+                                Cari
+                            </button>
+                            <button
+                                onClick={handleResetSearch}
+                                className="flex-1 md:flex-none px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-gray-300 text-sm font-medium"
+                            >
+                                Reset
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div className='text-white mx-4 sm:mx-6 lg:mx-8 mt-10 '>
                     <div className="overflow-x-auto">
@@ -413,7 +521,7 @@ export default function Absensi() {
                                             <td className="px-6 py-4">{item.date}</td>
                                             <td className="px-6 py-4">{item.information}</td>
                                             <td className="px-6 py-4 flex gap-2 justify-center">
-                                            <div className='flex gap-6 items-center '>
+                                            <div className='flex gap-6 items-center justify-center'>
                                                 <div className='flex items-center gap-1 text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)}>
                                                     <FaRegEdit />
                                                     <a href="#" className='hover:underline'>Edit</a>
