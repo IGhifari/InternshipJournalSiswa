@@ -10,9 +10,30 @@ export default function Edit({ mustVerifyEmail, status, auth}) {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200">
-                    Profile {user.students?.name || 'Belum Ditentukan'}
-                </h2>
+                <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-700 rounded-lg shadow-md">
+                    <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-blue-100 dark:bg-blue-800/40 rounded-full">
+                            <svg className="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">
+                                Profile
+                            </h2>
+                            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">
+                                {user.students?.name || 'Belum Ditentukan'}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="hidden md:block">
+                        <div className="px-4 py-1.5 bg-blue-100 dark:bg-blue-800/40 rounded-full">
+                            <span className="text-sm text-gray-900 dark:text-gray-50">
+                                {user.students?.status_pkl || 'Status PKL'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             }
         >
             <Head title="Profile" />
@@ -20,11 +41,11 @@ export default function Edit({ mustVerifyEmail, status, auth}) {
             <div className="py-8 md:py-12">
                 <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
                     {/* Header Section */}
-                    <div className='bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-gray-800 dark:text-gray-100 text-center shadow-lg'>
-                        <h1 className="font-bold text-xl md:text-2xl mb-3">
+                    <div className='bg-gray-50 dark:bg-gray-700 rounded-lg p-4 sm:p-6 text-gray-800 dark:text-gray-100 text-center shadow-lg'>
+                        <h1 className="font-bold text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3">
                             Selamat Datang di Halaman Profil
                         </h1>
-                        <p className="text-sm md:text-base opacity-90">
+                        <p className="text-xs sm:text-sm md:text-base opacity-90 max-w-2xl mx-auto leading-relaxed">
                             Halaman ini digunakan untuk mengatur dan mengelola informasi profil Anda.
                             Pastikan Anda mengisi semua informasi yang diperlukan dan simpan perubahan Anda.
                         </p>
