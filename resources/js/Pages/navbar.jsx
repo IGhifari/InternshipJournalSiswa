@@ -66,19 +66,19 @@ export default function Navbar({ auth }) {
                             <>
                                 <Link
                                     href={route('welcome')}
-                                    className="block md:inline-block px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-300"
+                                    className="block md:inline-block px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400   rounded-lg transition-all duration-300"
                                 >
                                     Home
                                 </Link>
                                 <Link
                                     href={route('login')}
-                                    className="block md:inline-block px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-300"
+                                    className="block md:inline-block px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400  rounded-lg transition-all duration-300"
                                 >
                                     Login
                                 </Link>
                                 <Link
                                     href={route('register')}
-                                    className="block md:inline-block px-6 py-2 m-3 md:m-0 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-300 font-medium shadow-md hover:shadow-lg"
+                                    className="block md:inline-block px-6 py-2 m-3 md:m-0   text-white rounded-lg transition-all duration-300 font-medium hover:text-indigo-600 dark:hover:text-indigo-400 "
                                 >
                                     Sign up
                                 </Link>
