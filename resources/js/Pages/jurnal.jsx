@@ -4,28 +4,25 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'; 
 import Footer from '@/Components/footer';
 import './scrollbar.css';
-import { FaEye, FaRegEdit } from "react-icons/fa";
+import { FaEye, FaRegEdit, FaSearch, FaUserCircle, FaBuilding, FaBook } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
-import { MdRemoveRedEye } from "react-icons/md";
+import { MdRemoveRedEye, MdDateRange } from "react-icons/md";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { motion } from 'framer-motion';
+
 export default function Jurnal() {
   const { jurnalData, auth } = usePage().props;
       const  user = usePage().props.auth.user;
 
   // State untuk data jurnal
   const [jurnalDataState, setJurnalDataState] = useState(jurnalData || []);
-
-  // Tambahkan state untuk pencarian
   const [searchCriteria, setSearchCriteria] = useState({
     name: '',
-    date: '',
     supervisor_name: '',
+    date: '',
     activity: ''
   });
-  
-  // State untuk menyimpan hasil pencarian
-  const [filteredJurnal, setFilteredJurnal] = useState(jurnalData || []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -36,11 +33,14 @@ export default function Jurnal() {
     activity: '', 
   });
 
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('jurnalData', JSON.stringify(jurnalDataState));
   }, [jurnalDataState]);
 
-  // Fungsi untuk menangani perubahan input pencarian
+  // Handle search change
   const handleSearchChange = (field, value) => {
     setSearchCriteria(prev => ({
       ...prev,
@@ -48,20 +48,21 @@ export default function Jurnal() {
     }));
   };
 
-  // Fungsi untuk melakukan pencarian
+  // Handle search submit
   const handleSearchSubmit = () => {
-    const filtered = jurnalDataState.filter(item => {
+    setIsSearching(true);
+    const filteredData = jurnalData.filter(item => {
       const nameMatch = item.name.toLowerCase().includes(searchCriteria.name.toLowerCase()) || !searchCriteria.name;
-      const dateMatch = item.date.includes(searchCriteria.date) || !searchCriteria.date;
       const supervisorMatch = item.supervisor_name.toLowerCase().includes(searchCriteria.supervisor_name.toLowerCase()) || !searchCriteria.supervisor_name;
+      const dateMatch = item.date.includes(searchCriteria.date) || !searchCriteria.date;
       const activityMatch = item.activity.toLowerCase().includes(searchCriteria.activity.toLowerCase()) || !searchCriteria.activity;
-
-      return nameMatch && dateMatch && supervisorMatch && activityMatch;
+      
+      return nameMatch && supervisorMatch && dateMatch && activityMatch;
     });
-
-    setFilteredJurnal(filtered);
-
-    if (filtered.length === 0) {
+    
+    setSearchResults(filteredData);
+    
+    if (filteredData.length === 0) {
       Swal.fire({
         icon: 'info',
         title: 'Tidak Ada Hasil',
@@ -70,15 +71,17 @@ export default function Jurnal() {
     }
   };
 
-  // Fungsi untuk mereset pencarian
+  // Handle reset search
   const handleResetSearch = () => {
     setSearchCriteria({
       name: '',
-      date: '',
       supervisor_name: '',
+      date: '',
       activity: ''
     });
-    setFilteredJurnal(jurnalDataState);
+    setSearchResults([]);
+    setIsSearching(false);
+    setJurnalDataState(jurnalData);
   };
 
   const handleDownloadPDF = (item) => {
@@ -384,286 +387,391 @@ export default function Jurnal() {
 
   return (
     <AuthenticatedLayout>
-      <Head title="Jurnal" />
+      <Head title="Jurnal PKL" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="container mx-auto px-4 py-8">
+          {/* Header Section dengan animasi yang lebih menarik */}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 mb-4">
+               Jurnal Kegiatan PKL 
+            </h1>
+            <p className="text-gray-700 dark:text-gray-200 text-xl italic">
+              Selamat datang, <span className="font-semibold text-purple-600 dark:text-purple-400">{user?.name}</span>! Semoga harimu menyenangkan 
+            </p>
+          </motion.div>
 
-      <div className="py-10 px-4 md:px-0">
-        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          {/* Bagian Header */}
-          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800 mb-8">
-          </div>
-
-          {/* Form Input Jurnal */}
-          <div className="bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
-            <div className="pb-10 text-gray-900 dark:text-gray-100 text-center">
-              <h1 className="text-2xl font-bold">Halo, selamat datang {user?.name} </h1>
-              <p className="mt-2 text-gray-400">Isi jurnal untuk keperluan catatan harian Anda di bawah ini.</p>
-            </div>
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
-                    Nama
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Masukkan nama Anda"
-                    className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
-                    required
-                  />
+          {/* Main Content Container dengan efek glassmorphism */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Form Section */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="lg:col-span-2"
+            >
+              <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-6 border border-white/20">
+                <div className="flex items-center gap-3 mb-6">
+                  <FaBook className="text-2xl text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                    Input Jurnal Harian
+                  </h2>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <FaUserCircle />
+                        Nama Lengkap
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder='Masukkan Nama Lengkap'
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white transition-all duration-200"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="class"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
+                        Kelas
+                      </label>
+                      <select
+                        id="class"
+                        name="class"
+                        value={formData.class}
+                        onChange={handleChange}
+                        className="w-full mt-1 px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
+                      >
+                        <option value="">Pilih Kelas</option>
+                        <option value="XII RPL 1">XII RPL 1</option>
+                        <option value="XII RPL 2">XII RPL 2</option>
+                      </select>
+                    </div>
+                  </div>
                   <div>
-                      <p className='text-yellow-500'>pastikan nama anda sesuai dengan nama lengkap anda</p>
+                    <label
+                      htmlFor="company"
+                      className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Nama Perusahaan
+                    </label>
+                    <input
+                      type="text"
+                      id="company"
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      placeholder="Masukkan nama Perusahaan"
+                      className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="supervisor_name"
+                      className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Supervisor Name
+                    </label>
+                    <input
+                      type="text"
+                      id="supervisor_name"
+                      name="supervisor_name"
+                      value={formData.supervisor_name}
+                      onChange={handleChange}
+                      placeholder="Masukkan nama Supervisor"
+                      className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
+                      required
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="date"
+                      className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Tanggal
+                    </label>
+                    <input
+                      type="date"
+                      id="date"
+                      name="date"
+                      value={formData.date}
+                      onChange={handleChange}
+                      className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <FaBook />
+                      Kegiatan
+                    </label>
+                    <textarea
+                      name="activity"
+                      value={formData.activity}
+                      placeholder='Masukkan Kegiatan'
+                      onChange={handleChange}
+                      rows="4"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white transition-all duration-200"
+                      required
+                    ></textarea>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg transition-all duration-200"
+                  >
+                    Simpan Jurnal
+                  </motion.button>
+                </form>
+              </div>
+            </motion.div>
+
+            {/* Search Section */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="lg:col-span-1"
+            >
+              <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-6 border border-white/20">
+                <div className="flex items-center gap-3 mb-6">
+                  <FaSearch className="text-2xl text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                    Cari Jurnal
+                  </h2>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <FaUserCircle />
+                      Nama
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Cari berdasarkan nama..."
+                      value={searchCriteria.name}
+                      onChange={(e) => handleSearchChange('name', e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <FaUserCircle />
+                      Supervisor
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Cari berdasarkan supervisor..."
+                      value={searchCriteria.supervisor_name}
+                      onChange={(e) => handleSearchChange('supervisor_name', e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <MdDateRange />
+                      Tanggal
+                    </label>
+                    <input
+                      type="date"
+                      value={searchCriteria.date}
+                      onChange={(e) => handleSearchChange('date', e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <FaBook />
+                      Kegiatan
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Cari berdasarkan kegiatan..."
+                      value={searchCriteria.activity}
+                      onChange={(e) => handleSearchChange('activity', e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleSearchSubmit}
+                      className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg transition-all duration-200"
+                    >
+                      Cari
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleResetSearch}
+                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg transition-all duration-200"
+                    >
+                      Reset
+                    </motion.button>
                   </div>
                 </div>
-                <div>
-                  <label
-                    htmlFor="class"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
-                    Kelas
-                  </label>
-                  <select
-                    id="class"
-                    name="class"
-                    value={formData.class}
-                    onChange={handleChange}
-                    className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
-                  >
-                    <option value="">Pilih Kelas</option>
-                    <option value="XII RPL 1">XII RPL 1</option>
-                    <option value="XII RPL 2">XII RPL 2</option>
-                  </select>
-                </div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label
-                    htmlFor="company"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
-                    Nama Perusahaan
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    placeholder="Masukkan nama Perusahaan"
-                    className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="supervisor_name"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
-                    Supervisor Name
-                  </label>
-                  <input
-                    type="text"
-                    id="supervisor_name"
-                    name="supervisor_name"
-                    value={formData.supervisor_name}
-                    onChange={handleChange}
-                    placeholder="Masukkan nama Supervisor"
-                    className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="date"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                >
-                  Tanggal
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="activity"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                >
-                  Catatan Jurnal
-                </label>
-                <textarea
-                  id="activity"
-                  name="activity"
-                  value={formData.activity}
-                  onChange={handleChange}
-                  placeholder="Tulis catatan jurnal Anda di sini"
-                  className="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-200"
-                  rows={4}
-                  required
-                />
-              </div>
-
-              <div className="mt-4">
-                <button
-                  type="submit"
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
-                >
-                  Simpan Jurnal
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div className='p-4 md:p-6 lg:p-8'>
-          {/* Search Container */}
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
-            
-            {/* Search by Name */}
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Cari nama..." 
-                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors shadow-sm hover:shadow-md"
-                value={searchCriteria.name}
-                onChange={(e) => handleSearchChange('name', e.target.value)}
-              />
-              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-
-            {/* Search by Date */}
-            <div className="relative">
-              <input 
-                type="date" 
-                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors shadow-sm hover:shadow-md"
-                value={searchCriteria.date}
-                onChange={(e) => handleSearchChange('date', e.target.value)}
-              />
-              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-
-            {/* Search by Supervisor */}
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Cari supervisor..." 
-                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors shadow-sm hover:shadow-md"
-                value={searchCriteria.supervisor_name}
-                onChange={(e) => handleSearchChange('supervisor_name', e.target.value)}
-              />
-              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-
-            {/* Search by Activity */}
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Cari kegiatan..." 
-                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors shadow-sm hover:shadow-md"
-                value={searchCriteria.activity}
-                onChange={(e) => handleSearchChange('activity', e.target.value)}
-              />
-              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-
+            </motion.div>
           </div>
 
-          {/* Buttons Container */}
-          <div className="flex flex-col sm:flex-row justify-center sm:justify-end gap-3 mt-4">
-            <button
-              onClick={handleSearchSubmit}
-              className="w-full sm:w-auto px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+          {/* Hasil Pencarian */}
+          {isSearching && (
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="container mx-auto px-4 mt-8"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              Cari
-            </button>
-            <button
-              onClick={handleResetSearch}
-              className="w-full sm:w-auto px-6 py-2.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Reset
-            </button>
-          </div>
-        </div>
-        <div className='text-white  mx-4 sm:mx-6 lg:mx-8 mt-5'>
-          <div className='overflow-x-auto'>
-            <table className="w-full text-sm text-gray-500 dark:text-gray-400 text-center">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                  <th scope="col" className="px-6 py-3">Nama</th>
-                  <th scope="col" className="px-6 py-3">Kelas</th>
-                  <th scope="col" className="px-6 py-3">Nama Perusahaan</th>
-                  <th scope="col" className="px-6 py-3">Supervisor Name</th>
-                  <th scope="col" className="px-6 py-3">Tanggal</th>
-                  <th scope="col" className="px-6 py-3">Kegiatan</th>
-                  <th scope="col" className="px-6 py-3">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredJurnal.length > 0 ? (
-                  filteredJurnal.map((item) => (
-                    <tr key={item.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                      <td className="px-6 py-4">{item.name}</td>
-                      <td className="px-6 py-4">{item.class}</td>
-                      <td className="px-6 py-4">{item.company}</td>
-                      <td className="px-6 py-4">{item.supervisor_name}</td>
-                      <td className="px-6 py-4">{item.date}</td>
-                      <td className="px-6 py-4">{item.activity}</td>
-                      <td className="px-6 py-4 flex gap-5 justify-center">
-                        <div className='flex items-center gap-1 text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)}>
-                          <FaRegEdit />
-                          <a href="#" className='hover:underline'>Edit</a>
-                        </div>
-                        <div className='flex items-center gap-1 text-red-500 cursor-pointer' onClick={() => handleDelete(item.id)}>
-                          <RiDeleteBin6Fill />
-                          <a href="#" className='hover:underline'>Delete</a>
-                        </div>
-                        <div className='flex items-center gap-1 text-white cursor-pointer' onClick={() => handleView(item)}>
-                          <MdRemoveRedEye />
-                          <span className='hover:underline'>View</span>
-                        </div>
-                        <div className='flex items-center gap-1 text-blue-500 cursor-pointer' onClick={() => handleDownloadPDF(item)}>
-                                            <span className='hover:underline'>Download Jurnal</span>
-                        </div>
-                      </td>
+                <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-6 border border-white/20">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                            Hasil Pencarian
+                        </h2>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                            Ditemukan {searchResults.length} hasil
+                        </span>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="bg-gray-50 dark:bg-gray-700/50">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Nama</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600 dark:text-gray-300">Kelas</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600 dark:text-gray-300">Perusahaan</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600 dark:text-gray-300">Supervisor</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600 dark:text-gray-300">Tanggal</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600 dark:text-gray-300">Kegiatan</th>
+                                    <th className="px-4 py-3  text-sm font-semibold text-gray-600 dark:text-gray-300 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                {searchResults.map((item, index) => (
+                                    <motion.tr 
+                                        key={item.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                                        className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50"
+                                    >
+                                        <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200">{item.name}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 text-center">{item.class}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 text-center">{item.company}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 text-center">{item.supervisor_name}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 text-center">{item.date}</td>
+                                        <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 text-center">
+                                            {item.activity.length > 50 ? `${item.activity.substring(0, 50)}...` : item.activity}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm ">
+                                            <div className="flex gap-2 items-center justify-center">
+                                                <button
+                                                    onClick={() => handleEdit(item)}
+                                                    className="p-1.5 text-yellow-600  flex items-center gap-1 justify-center rounded-lg dark:text-yellow-400 "
+                                                    title="Edit"
+                                                >
+                                                    <FaRegEdit size={18} />
+                                                    <p className='hover:underline'>Edit</p>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(item.id)}
+                                                    className="p-1.5 text-red-600  rounded-lg flex items-center gap-1 justify-center dark:text-red-400 "
+                                                    title="Hapus"
+                                                >
+                                                    <RiDeleteBin6Fill size={18} />
+                                                    <p className='hover:underline'>Delete</p>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleView(item)}
+                                                    className="p-1.5 text-blue-600  flex items-center gap-1 justify-center rounded-lg dark:text-white "
+                                                    title="Lihat Detail"
+                                                >
+                                                    <MdRemoveRedEye size={18} />
+                                                    <p className='hover:underline'>View</p>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </motion.tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </motion.div>
+          )}
+
+          {/* Table Section dengan styling yang lebih modern */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="mt-8 bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl border border-white/20 overflow-hidden"
+          >
+            <div className="text-white mx-4 sm:mx-6 lg:mx-8">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-gray-500 dark:text-gray-400 text-center">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">Nama</th>
+                      <th scope="col" className="px-6 py-3">Kelas</th>
+                      <th scope="col" className="px-6 py-3">Nama Perusahaan</th>
+                      <th scope="col" className="px-6 py-3">Supervisor Name</th>
+                      <th scope="col" className="px-6 py-3">Tanggal</th>
+                      <th scope="col" className="px-6 py-3">Kegiatan</th>
+                      <th scope="col" className="px-6 py-3">Aksi</th>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="px-6 py-4">No data available</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody>
+                    {jurnalData.length > 0 ? (
+                      jurnalData.map((item) => (
+                          <tr key={item.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                          <td className="px-6 py-4">{item.name}</td>
+                          <td className="px-6 py-4">{item.class}</td>
+                          <td className="px-6 py-4">{item.company}</td>
+                          <td className="px-6 py-4">{item.supervisor_name}</td>
+                          <td className="px-6 py-4">{item.date}</td>
+                          <td className="px-6 py-4">{item.activity}</td>
+                          <td className="px-6 py-4 flex gap-5 justify-center">
+                            <div className='flex items-center gap-1 text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)}>
+                              <FaRegEdit />
+                              <a href="#" className='hover:underline'>Edit</a>
+                            </div>
+                            <div className='flex items-center gap-1 text-red-500 cursor-pointer' onClick={() => handleDelete(item.id)}>
+                              <RiDeleteBin6Fill />
+                              <a href="#" className='hover:underline'>Delete</a>
+                            </div>
+                            <div className='flex items-center gap-1 text-white cursor-pointer' onClick={() => handleView(item)}>
+                              <MdRemoveRedEye />
+                              <span className='hover:underline'>View</span>
+                            </div>
+                            <div className='flex items-center gap-1 text-blue-500 cursor-pointer' onClick={() => handleDownloadPDF(item)}>
+                              <span className='hover:underline'>Download Jurnal</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="7" className="px-6 py-4">No data available</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </motion.div>
         </div>
         <Footer />
       </div>

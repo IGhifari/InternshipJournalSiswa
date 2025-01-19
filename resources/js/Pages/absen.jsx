@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage } from '@inertiajs/react';
 import Footer from '@/Components/footer';
@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { MdRemoveRedEye } from "react-icons/md";
+import { motion } from 'framer-motion';
 
 export default function Absensi() {
     const { absensiData, auth } = usePage().props; 
@@ -187,7 +188,7 @@ export default function Absensi() {
                                 <option value="Hadir" ${item.information === "Hadir" ? "selected" : ""}>Hadir</option>
                                 <option value="Izin" ${item.information === "Izin" ? "selected" : ""}>Izin</option>
                                 <option value="Sakit" ${item.information === "Sakit" ? "selected" : ""}>Sakit</option>
-                                <option value="Alfa" ${item.information === "Alfa" ? "selected" : ""}>Alfa</option>
+                                <option value="Terlambat" ${item.information === "Terlambat" ? "selected" : ""}>Terlambat</option>
                             </select>
                         </div>
                     </div>
@@ -304,251 +305,358 @@ export default function Absensi() {
 
     const handleView = (item) => {
         Swal.fire({
-            width: 600,
-            title: '<strong class="text-4xl">Detail Absensi</strong>',
+            title: 'Detail Absensi',
             html: `
-            <div class="flex justify-center" >
-            <div style="font-size: 1.1rem"; class="text-left ">
-                <p><strong>Nama:</strong> ${item.name}</p>
-                <p><strong>Kelas:</strong> ${item.class}</p>
-                <p><strong>Tanggal:</strong> ${item.date}</p>
-                <p><strong>Informasi:</strong> ${item.information}</p>
-            </div>
-            </div>
+                <div class="text-left space-y-4 mt-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 font-semibold">Nama Lengkap:</p>
+                        <p class="text-lg text-gray-800">${item.name}</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 font-semibold">Kelas:</p>
+                        <p class="text-lg text-gray-800">${item.class}</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 font-semibold">Tanggal:</p>
+                        <p class="text-lg text-gray-800">${item.date}</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 font-semibold">Status Kehadiran:</p>
+                        <span class="inline-block px-3 py-1 mt-1 rounded-full text-sm font-medium ${
+                            item.information === 'Hadir' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                            item.information === 'Izin' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                            item.information === 'Sakit' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300' :
+                            'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                        }">${item.information}</span>
+                    </div>
+                </div>
             `,
-            icon: 'info',
-            confirmButtonText: 'Tutup'
+            width: '32rem',
+            showCloseButton: true,
+            showConfirmButton: false,
+            customClass: {
+                container: 'custom-swal-container',
+                popup: 'custom-swal-popup',
+                content: 'custom-swal-content'
+            }
         });
     };
     
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1
+        }
+    };
+
     return (
         <AuthenticatedLayout>
             <Head title="Absensi" />
-            <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
-                <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-                    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-                        <div className="p-6 text-center">
-                            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                                Hallo, Selamat Datang {user.name} 
-                            </h1>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                Isi data absensi Anda di bawah ini.
-                            </p>
-                        </div>
-                        <form
-                            onSubmit={handleSubmit}
-                            className="p-6 flex flex-col space-y-4"
-                        >
-                            <div>
-                                <label
-                                    htmlFor="name"
-                                    className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+                <motion.div 
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="container mx-auto px-4 py-8"
+                >
+                    {/* Welcome Card */}
+                    <motion.div 
+                        variants={itemVariants}
+                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mb-8"
+                    >
+                        <div className="relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 animate-pulse"></div>
+                            <div className="relative p-8 text-center">
+                                <motion.h1 
+                                    className="text-3xl font-bold text-gray-800 dark:text-white mb-2"
+                                    animate={{ scale: [1, 1, 1] }}
+                                    transition={{ duration: 1, repeat: Infinity }}
                                 >
-                                    Nama
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={attendanceData.name}
-                                    onChange={handleChange}
-                                    placeholder="Masukkan Nama Lengkap"
-                                    className="w-full p-3 border rounded-lg dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300"
-                                />
-                                <p className='text-yellow-600 text-sm pt-2'>
-                                    *Diisi sesuai username Anda dan perhatikan spasi
+                                    Selamat Datang, {user.name}! 
+                                </motion.h1>
+                                <p className="text-gray-600 dark:text-gray-300">
+                                    Silakan isi absensi Anda hari ini
                                 </p>
                             </div>
+                        </div>
+                    </motion.div>
 
-                            {/* Input Kelas */}
-                            <div>
-                                <label
-                                    htmlFor="class"
-                                    className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
-                                >
-                                    Kelas
-                                </label>
-                                <select
-                                    id="class"
-                                    name="class"
-                                    value={attendanceData.class}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border rounded-lg dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300"
-                                >
-                                    <option value="">Pilih Kelas</option>
-                                    <option value="XII RPL 1">XII RPL 1</option>
-                                    <option value="XII RPL 2">XII RPL 2</option>
-                                </select>
-                            </div>
+                    {/* Form Card */}
+                    <motion.div 
+                        variants={itemVariants}
+                        className="grid md:grid-cols-2 gap-8 mb-8"
+                    >
+                        {/* Form Section */}
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6 flex items-center gap-2">
+                                <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Form Absensi
+                            </h2>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Nama Lengkap
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        placeholder="Masukan Nama Lengkap"
+                                        value={attendanceData.name}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Kelas
+                                    </label>
+                                    <select
+                                        name="class"
+                                        value={attendanceData.class}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                                        required
+                                    >
+                                        <option value="">Pilih Kelas</option>
+                                        <option value="XII RPL 1">XII RPL 1</option>
+                                        <option value="XII RPL 2">XII RPL 2</option>
+                                    </select>
+                                </div>
 
-                            {/* Input Tanggal */}
-                            <div>
-                                <label
-                                    htmlFor="date"
-                                    className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Tanggal
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="date"
+                                        value={attendanceData.date}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Status Kehadiran
+                                    </label>
+                                    <select
+                                        name="information"
+                                        value={attendanceData.information}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                                        required
+                                    >
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Terlambat">Terlambat</option>
+                                    </select>
+                                </div>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    type="submit"
+                                    className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-200"
                                 >
-                                    Tanggal
-                                </label>
+                                    Submit Absensi
+                                </motion.button>
+                            </form>
+                        </div>
+
+                        {/* Search Section */}
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-6 flex items-center gap-2">
+                                <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                Cari Absensi
+                            </h2>
+                            <div className="space-y-4">
+                                <input
+                                    type="text"
+                                    placeholder="Cari berdasarkan nama..."
+                                    value={searchCriteria.name}
+                                    onChange={(e) => handleSearchChange('name', e.target.value)}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                                />
                                 <input
                                     type="date"
-                                    id="date"
-                                    name="date"
-                                    value={attendanceData.date}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border rounded-lg dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300"
+                                    value={searchCriteria.date}
+                                    onChange={(e) => handleSearchChange('date', e.target.value)}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
                                 />
-                            </div>
-
-                            {/* Input Informasi */}
-                            <div>
-                                <label
-                                    htmlFor="information"
-                                    className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
-                                >
-                                    Status Kehadiran
-                                </label>
                                 <select
-                                    id="information"
-                                    name="information"
-                                    value={attendanceData.information}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border rounded-lg dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300"
+                                    value={searchCriteria.information}
+                                    onChange={(e) => handleSearchChange('information', e.target.value)}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
                                 >
+                                    <option value="">Semua Status</option>
                                     <option value="Hadir">Hadir</option>
                                     <option value="Izin">Izin</option>
                                     <option value="Sakit">Sakit</option>
-                                    <option value="Alfa">Alfa</option>
+                                    <option value="Terlambat">Terlambat</option>
                                 </select>
-                                <p className='text-yellow-600 text-sm pt-2'>
-                                    *Harap mengisi status kehadiran Anda dengan benar karena data tidak bisa diubah
-                                </p>
+                                <div className="flex gap-2">
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={handleSearchSubmit}
+                                        className="flex-1 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+                                    >
+                                        Cari
+                                    </motion.button>
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={handleResetSearch}
+                                        className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+                                    >
+                                        Reset
+                                    </motion.button>
+                                </div>
                             </div>
-
-                            <div>
-                                <button
-                                    type="submit"
-                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
-                                >
-                                    Simpan Absensi
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div className='mx-4 md:mx-8 lg:mx-10 mt-5'>
-                    {/* Search Container */}
-                    <div className="flex flex-col md:flex-row gap-4 justify-end">
-                        {/* Search by Name */}
-                        <div className="relative w-full md:w-64">
-                            <input 
-                                type="text" 
-                                placeholder="Cari nama..." 
-                                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors"
-                                value={searchCriteria.name}
-                                onChange={(e) => handleSearchChange('name', e.target.value)}
-                            />
-                            <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
                         </div>
+                    </motion.div>
 
-                        {/* Search by Date */}
-                        <div className="relative w-full md:w-64">
-                            <input 
-                                type="date" 
-                                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors"
-                                value={searchCriteria.date}
-                                onChange={(e) => handleSearchChange('date', e.target.value)}
-                            />
-                            <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-
-                        {/* Search by Status */}
-                        <div className="relative w-full md:w-64">
-                            <select
-                                className="w-full p-3 pl-10 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-colors appearance-none"
-                                value={searchCriteria.information}
-                                onChange={(e) => handleSearchChange('information', e.target.value)}
-                            >
-                                <option value="">Pilih Status</option>
-                                <option value="Hadir">Hadir</option>
-                                <option value="Izin">Izin</option>
-                                <option value="Sakit">Sakit</option>
-                                <option value="Alfa">Alfa</option>
-                            </select>
-                            <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <button
-                                onClick={handleSearchSubmit}
-                                className="flex-1 md:flex-none px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-300 text-sm font-medium"
-                            >
-                                Cari
-                            </button>
-                            <button
-                                onClick={handleResetSearch}
-                                className="flex-1 md:flex-none px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-gray-300 text-sm font-medium"
-                            >
-                                Reset
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div className='text-white mx-4 sm:mx-6 lg:mx-8 mt-10 '>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-gray-500 dark:text-gray-400 text-center ">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <tr>
-                                    <th scope="col" className="px-6 py-3">Nama</th>
-                                    <th scope="col" className="px-6 py-3">Kelas</th>
-                                    <th scope="col" className="px-6 py-3">Tanggal</th>
-                                    <th scope="col" className="px-6 py-3">Informasi</th>
-                                    <th scope="col" className="px-6 py-3">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {absensiList.length > 0 ? (
-                                    absensiList.map((item) => (
-                                        <tr key={item.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                            <td className="px-6 py-4">{item.name}</td>
-                                            <td className="px-6 py-4">{item.class}</td>
-                                            <td className="px-6 py-4">{item.date}</td>
-                                            <td className="px-6 py-4">{item.information}</td>
-                                            <td className="px-6 py-4 flex gap-2 justify-center">
-                                            <div className='flex gap-6 items-center justify-center'>
-                                                <div className='flex items-center gap-1 text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)}>
-                                                    <FaRegEdit />
-                                                    <a href="#" className='hover:underline'>Edit</a>
-                                                </div>
-                                                <div className='flex items-center gap-1 text-red-500 cursor-pointer' onClick={() => handleDelete(item.id)}>
-                                                    <RiDeleteBin6Fill />
-                                                    <a href="#" className='hover:underline'>Delete</a>
-                                                </div>
-                                                <div className='flex items-center gap-1 text-white cursor-pointer' onClick={() => handleView(item)}>
-                                                    <MdRemoveRedEye />
-                                                    <a href="#" className='hover:underline'>View</a>
-                                                </div>
-                                            </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
+                    {/* Table Section */}
+                    <motion.div 
+                        variants={itemVariants}
+                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
+                    >
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <td colSpan="5" className="px-6 py-4">No data available</td>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Nama
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Kelas
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Tanggal
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Aksi
+                                        </th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <Footer/>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    {absensiList.map((item, index) => (
+                                        <motion.tr 
+                                            key={item.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.1 }}
+                                            className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                                        >
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                                {item.name}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                                {item.class}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                                {item.date}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                                    item.information === 'Hadir' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                                                    item.information === 'Izin' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                                                    item.information === 'Sakit' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300' :
+                                                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                                                }`}>
+                                                    {item.information}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                <div className="flex items-center space-x-3">
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.1 }}
+                                                        whileTap={{ scale: 0.9 }}
+                                                        onClick={() => handleEdit(item)}
+                                                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 tooltip"
+                                                        title="Edit"
+                                                    >
+                                                        <FaRegEdit size={18} />
+                                                    </motion.button>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.1 }}
+                                                        whileTap={{ scale: 0.9 }}
+                                                        onClick={() => handleDelete(item.id)}
+                                                        className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 tooltip"
+                                                        title="Hapus"
+                                                    >
+                                                        <RiDeleteBin6Fill size={18} />
+                                                    </motion.button>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.1 }}
+                                                        whileTap={{ scale: 0.9 }}
+                                                        onClick={() => handleView(item)}
+                                                        className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 tooltip"
+                                                        title="Lihat Detail"
+                                                    >
+                                                        <MdRemoveRedEye size={18} />
+                                                    </motion.button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </motion.div>
+                </motion.div>
+                <Footer />
             </div>
+            <style jsx>{`
+                .tooltip {
+                    position: relative;
+                }
+                
+                .tooltip:before {
+                    content: attr(title);
+                    position: absolute;
+                    bottom: 100%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 4px 8px;
+                    background-color: rgba(0, 0, 0, 0.8);
+                    color: white;
+                    font-size: 12px;
+                    border-radius: 4px;
+                    white-space: nowrap;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.2s ease;
+                }
+                
+                .tooltip:hover:before {
+                    opacity: 1;
+                    visibility: visible;
+                }
+            `}</style>
         </AuthenticatedLayout>
     );
 }
