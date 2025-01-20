@@ -66,11 +66,24 @@ export default function AuthenticatedLayout({ header, children }) {
                                         </span>
                                     </Dropdown.Trigger>
 
-                                    <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                        <Dropdown.Link href={route('welcome')}>Home</Dropdown.Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button">
-                                            Log Out
+                                    <Dropdown.Content className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+                                        <Dropdown.Link className="flex items-center hover:bg-indigo-500 hover:text-white transition duration-200" href={route('profile.edit')}>
+                                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6h6M6 12h6v6M6 6h12M6 18h12" />
+                                            </svg>
+                                            Profil
+                                        </Dropdown.Link>
+                                        <Dropdown.Link className="flex items-center hover:bg-indigo-500 hover:text-white transition duration-200" href={route('welcome')}>
+                                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                            </svg>
+                                            Beranda
+                                        </Dropdown.Link>
+                                        <Dropdown.Link className="flex items-center hover:bg-red-500 hover:text-white transition duration-200" href={route('logout')} method="post" as="button">
+                                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.5 1.5M15 7h5l-1.5-1.5M4 7h5l-1.5-1.5M4 17h5l-1.5 1.5M4 12h16" />
+                                            </svg>
+                                            Keluar
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>

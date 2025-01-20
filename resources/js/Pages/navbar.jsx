@@ -54,11 +54,12 @@ export default function Navbar({ auth }) {
                         ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible md:opacity-100 md:visible'}
                         transform ${isOpen ? 'translate-y-0' : '-translate-y-2 md:translate-y-0'}
                         md:flex md:items-center md:space-x-2
+                        p-4 md:p-0 rounded-b-lg
                     `}>
                         {auth.user ? (
                             <Link
                                 href={route('siswa.dashboard')}
-                                className="block md:inline-block px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400  rounded-lg transition-all duration-300"
+                                className="block md:inline-block px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400  rounded-lg transition-all duration-300 text-center font-medium"
                             >
                                 Dashboard
                             </Link>
@@ -66,19 +67,19 @@ export default function Navbar({ auth }) {
                             <>
                                 <Link
                                     href={route('welcome')}
-                                    className="block md:inline-block px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400   rounded-lg transition-all duration-300"
+                                    className="block md:inline-block px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400  rounded-lg transition-all duration-300 text-center font-medium mb-2 md:mb-0"
                                 >
                                     Home
                                 </Link>
                                 <Link
                                     href={route('login')}
-                                    className="block md:inline-block px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400  rounded-lg transition-all duration-300"
+                                    className="block md:inline-block px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400  rounded-lg transition-all duration-300 text-center font-medium mb-2 md:mb-0"
                                 >
                                     Login
                                 </Link>
                                 <Link
                                     href={route('register')}
-                                    className="block md:inline-block px-6 py-2 m-3 md:m-0   text-white rounded-lg transition-all duration-300 font-medium hover:text-indigo-600 dark:hover:text-indigo-400 "
+                                    className="block md:inline-block px-6 py-3  text-white hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg transition-all duration-300 font-medium text-center"
                                 >
                                     Sign up
                                 </Link>

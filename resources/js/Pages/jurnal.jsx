@@ -36,6 +36,25 @@ export default function Jurnal() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  // Tambahkan definisi variants di awal komponen
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   useEffect(() => {
     localStorage.setItem('jurnalData', JSON.stringify(jurnalDataState));
   }, [jurnalDataState]);
@@ -397,11 +416,11 @@ export default function Jurnal() {
             transition={{ duration: 0.5 }}
             className="text-center mb-8"
           >
-            <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 mb-4">
-              Jurnal Kegiatan PKL 
+            <h1 className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+              Jurnal PKL
             </h1>
-            <p className="text-gray-700 dark:text-gray-200 text-xl italic">
-              Selamat datang, <span className="font-semibold text-purple-600 dark:text-purple-400">{user?.name}</span>
+            <p className="text-gray-700 dark:text-gray-200 text-lg">
+              Selamat datang, <span className="font-semibold">{user?.name}</span>
             </p>
           </motion.div>
 
@@ -635,7 +654,7 @@ export default function Jurnal() {
                 transition={{ duration: 0.5 }}
                 className="container mx-auto px-4 mt-8"
             >
-                <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-6 border border-white/20">
+                <div className="bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl p-6 border border-white/20 mb-10">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
                             Hasil Pencarian
@@ -712,69 +731,151 @@ export default function Jurnal() {
             </motion.div>
           )}
 
-          {/* Table Section dengan styling yang lebih modern */}
+          {/* Table Section */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="mt-8 bg-white/80 backdrop-blur-xl dark:bg-gray-800/80 rounded-2xl shadow-xl border border-white/20 overflow-hidden"
+            variants={itemVariants}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mt-20"
           >
-            <div className="text-white mx-4 sm:mx-6 lg:mx-8">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-gray-500 dark:text-gray-400 text-center">
-                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Nama
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Kelas
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Perusahaan
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Supervisor
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Tanggal
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Kegiatan
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {jurnalData.length > 0 ? (
+                    jurnalData.map((item, index) => (
+                      <motion.tr 
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          {item.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          {item.class}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          {item.company}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          {item.supervisor_name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          {item.date}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                          {item.activity.length > 50 ? `${item.activity.substring(0, 50)}...` : item.activity}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <div className="flex items-center space-x-3">
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => handleEdit(item)}
+                              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 tooltip"
+                              title="Edit"
+                            >
+                              <FaRegEdit size={18} />
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => handleDelete(item.id)}
+                              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 tooltip"
+                              title="Hapus"
+                            >
+                              <RiDeleteBin6Fill size={18} />
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => handleView(item)}
+                              className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 tooltip"
+                              title="Lihat Detail"
+                            >
+                              <MdRemoveRedEye size={18} />
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => handleDownloadPDF(item)}
+                              className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 tooltip"
+                              title="Download PDF"
+                            >
+                              <span className="text-sm">PDF</span>
+                            </motion.button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))
+                  ) : (
                     <tr>
-                      <th scope="col" className="px-6 py-3">Nama</th>
-                      <th scope="col" className="px-6 py-3">Kelas</th>
-                      <th scope="col" className="px-6 py-3">Nama Perusahaan</th>
-                      <th scope="col" className="px-6 py-3">Supervisor Name</th>
-                      <th scope="col" className="px-6 py-3">Tanggal</th>
-                      <th scope="col" className="px-6 py-3">Kegiatan</th>
-                      <th scope="col" className="px-6 py-3">Aksi</th>
+                      <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        Tidak ada data tersedia
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {jurnalData.length > 0 ? (
-                      jurnalData.map((item) => (
-                          <tr key={item.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                          <td className="px-6 py-4">{item.name}</td>
-                          <td className="px-6 py-4">{item.class}</td>
-                          <td className="px-6 py-4">{item.company}</td>
-                          <td className="px-6 py-4">{item.supervisor_name}</td>
-                          <td className="px-6 py-4">{item.date}</td>
-                          <td className="px-6 py-4">{item.activity}</td>
-                          <td className="px-6 py-4 flex gap-5 justify-center">
-                            <div className='flex items-center gap-1 text-yellow-500 cursor-pointer' onClick={() => handleEdit(item)}>
-                              <FaRegEdit />
-                              <a href="#" className='hover:underline'>Edit</a>
-                            </div>
-                            <div className='flex items-center gap-1 text-red-500 cursor-pointer' onClick={() => handleDelete(item.id)}>
-                              <RiDeleteBin6Fill />
-                              <a href="#" className='hover:underline'>Delete</a>
-                            </div>
-                            <div className='flex items-center gap-1 text-white cursor-pointer' onClick={() => handleView(item)}>
-                              <MdRemoveRedEye />
-                              <span className='hover:underline'>View</span>
-                            </div>
-                            <div className='flex items-center gap-1 text-blue-500 cursor-pointer' onClick={() => handleDownloadPDF(item)}>
-                              <span className='hover:underline'>Download Jurnal</span>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="7" className="px-6 py-4">No data available</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                  )}
+                </tbody>
+              </table>
             </div>
           </motion.div>
         </div>
         <Footer />
       </div>
+      
+      {/* Perbaikan style JSX */}
+      <style>{`
+        .tooltip {
+          position: relative;
+        }
+        
+        .tooltip:before {
+          content: attr(title);
+          position: absolute;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 4px 8px;
+          background-color: rgba(0, 0, 0, 0.8);
+          color: white;
+          font-size: 12px;
+          border-radius: 4px;
+          white-space: nowrap;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.2s ease;
+        }
+        
+        .tooltip:hover:before {
+          opacity: 1;
+          visibility: visible;
+        }
+      `}</style>
     </AuthenticatedLayout>
   );
 }
