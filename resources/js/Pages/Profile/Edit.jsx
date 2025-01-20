@@ -3,6 +3,7 @@ import { Head, usePage } from '@inertiajs/react';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
+import Footer from '@/Components/footer';
 
 export default function Edit({ mustVerifyEmail, status, auth}) {
     const user = usePage().props.auth.user;
@@ -18,7 +19,7 @@ export default function Edit({ mustVerifyEmail, status, auth}) {
                             </svg>
                         </div>
                         <div>
-                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-50">
+                            <h2 className="text-xl md:text-1xl font-bold text-gray-900 dark:text-gray-50">
                                 Profile
                             </h2>
                             <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">
@@ -138,6 +139,9 @@ export default function Edit({ mustVerifyEmail, status, auth}) {
                     </div>
                 </div>
             </div>
+            <footer>
+                    <Footer/>
+            </footer>
         </AuthenticatedLayout>
     );
 }

@@ -27,8 +27,8 @@ export default function Welcome({ auth }) {
 
                             {/* Enhanced Subtitle with gradient underline */}
                             <div className="relative">
-                                <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                                    <span className="text-indigo-600 dark:text-indigo-400 font-semibold">Satu Platform</span> untuk mengelola data PKL siswa secara efisien dan mudah.
+                                <p className="text-sm md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                                    <span className="text-indigo-600  dark:text-indigo-400 font-semibold">Satu Platform</span> untuk mengelola data PKL siswa secara efisien dan mudah.
                                     <span className="block mt-2 text-gray-500 dark:text-gray-400">
                                         Tingkatkan pengalaman magang Anda dengan sistem manajemen yang modern.
                                     </span>

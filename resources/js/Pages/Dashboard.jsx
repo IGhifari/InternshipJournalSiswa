@@ -25,8 +25,8 @@ export default function Dashboard() {
         >
             <Head title="Dashboard" />
 
-            <div className="py-12 text-sm px-4 md:px-0">
-                <div className="mx-auto max-w-8xl sm:px-6 lg:px-8">
+            <div className="mt-12 text-sm  md:px-0">
+                <div className="mx-auto max-w-8xl sm:px-6 lg:px-8 px-4">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <h3 className="text-xl font-bold mb-6 text-indigo-700 dark:text-indigo-400">Ringkasan Aktivitas</h3>

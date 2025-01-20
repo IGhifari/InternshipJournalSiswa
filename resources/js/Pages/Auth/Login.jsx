@@ -28,7 +28,7 @@ export default function Login({ status, canResetPassword }) {
                 <div className="flex flex-col items-center px-4 sm:px-6 pt-4 sm:pt-6">
 
                     {/* Card Container */}
-                    <div className="w-full max-w-[360px] h-[420px] md:h-[465px] bg-white/90 backdrop-blur-sm dark:bg-gray-800/90 rounded-xl shadow-lg p-4 sm:p-6">
+                    <div className="w-full max-w-[360px] h-[455px] md:h-[465px] bg-white/90 backdrop-blur-sm dark:bg-gray-800/90 rounded-xl shadow-lg p-4 sm:p-6">
                         {/* Header */}
                         <div className="text-center mb-4">
                             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">

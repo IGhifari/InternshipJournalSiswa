@@ -126,15 +126,15 @@ const AboutUs = ({auth}) => {
                                 {[
                                     {
                                         name: "M. Ghifari Bima Khadafi",
-                                        role: "Full Stack Developer"
+                                        
                                     },
                                     {
                                         name: "Mutia Risnawati",
-                                        role: "UI/UX Designer"
+                                        
                                     },
                                     {
                                         name: "Rizqi Fadillah Azhar",
-                                        role: "Backend Developer"
+                                        
                                     }
                                 ].map((member, index) => (
                                     <motion.div
