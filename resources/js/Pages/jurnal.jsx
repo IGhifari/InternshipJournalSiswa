@@ -398,10 +398,10 @@ export default function Jurnal() {
             className="text-center mb-8"
           >
             <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 mb-4">
-               Jurnal Kegiatan PKL 
+              Jurnal Kegiatan PKL 
             </h1>
             <p className="text-gray-700 dark:text-gray-200 text-xl italic">
-              Selamat datang, <span className="font-semibold text-purple-600 dark:text-purple-400">{user?.name}</span>! Semoga harimu menyenangkan 
+              Selamat datang, <span className="font-semibold text-purple-600 dark:text-purple-400">{user?.name}</span>
             </p>
           </motion.div>
 

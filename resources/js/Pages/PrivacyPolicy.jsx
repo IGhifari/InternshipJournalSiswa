@@ -55,9 +55,9 @@ const PrivacyPolicy = ({auth}) => {
                                     title: "5. Hak Pengguna",
                                     content: "Sebagai pengguna, Anda memiliki hak-hak tertentu terkait data pribadi Anda, termasuk:",
                                     list: [
-                                        "<strong>Hak untuk Mengakses</strong>: Anda dapat meminta salinan data pribadi yang kami simpan tentang Anda.",
-                                        "<strong>Hak untuk Memperbaiki</strong>: Anda dapat memperbarui atau memperbaiki data pribadi yang tidak akurat.",
-                                        "<strong>Hak untuk Menghapus</strong>: Anda dapat meminta kami untuk menghapus data pribadi Anda, kecuali jika kami diwajibkan untuk mempertahankannya untuk tujuan hukum atau bisnis tertentu."
+                                        "Hak untuk Mengakses: Anda dapat meminta salinan data pribadi yang kami simpan tentang Anda.",
+                                        "Hak untuk Memperbaiki: Anda dapat memperbarui atau memperbaiki data pribadi yang tidak akurat.",
+                                        "Hak untuk Menghapus: Anda dapat meminta kami untuk menghapus data pribadi Anda, kecuali jika kami diwajibkan untuk mempertahankannya untuk tujuan hukum atau bisnis tertentu."
                                     ]
                                 },
                                 {
