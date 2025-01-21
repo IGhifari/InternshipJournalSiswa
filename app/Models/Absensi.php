@@ -15,6 +15,7 @@ class Absensi extends Model
         'class',
         'date',
         'information',
+        'photo',
     ];
 
         public function student()

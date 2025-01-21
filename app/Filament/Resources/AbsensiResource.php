@@ -37,7 +37,13 @@ class AbsensiResource extends Resource
                         "Sakit" => "Sakit",
                         "Terlambat" => "Terlambat",
                         "Izin" => "Izin",
-                    ]),
+                ]),
+                Forms\Components\FileUpload::make('photo')
+                    ->image()
+                    ->directory('absensi_photos')
+                    ->required()
+                    ->imagePreviewHeight('100')
+                    ->columnSpan(2)
             ]);
     }
 
@@ -49,6 +55,10 @@ class AbsensiResource extends Resource
                 Tables\Columns\TextColumn::make('class')->searchable(),
                 Tables\Columns\TextColumn::make('date'),
                 Tables\Columns\TextColumn::make('information')->searchable(),
+                Tables\Columns\ImageColumn::make('photo')
+                    ->label('Foto Absensi')
+                    ->disk('public')
+                    ->size(100),
             ])
             ->filters([
                 SelectFilter::make('class')

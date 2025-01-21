@@ -11,15 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('absensis', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('class');
-            $table->string('date');
-            $table->string('information');
+        Schema::table('absensis', function (Blueprint $table) {
             $table->string('photo')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
         });
     }
 
@@ -28,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('absensis');
+        Schema::table('absensis', function (Blueprint $table) {
+            $table->dropColumn('photo');
+        });
     }
 };

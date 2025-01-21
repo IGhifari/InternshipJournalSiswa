@@ -27,9 +27,19 @@ class AbsensiController extends Controller
             'class' => 'required|string',
             'date' => 'required|date',
             'information' => 'required|string',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $absensi = Absensi::create($data);
+        $photoPath = $request->file('photo')->store('absensi_photos', 'public');
+
+    
+        $absensi = new Absensi();
+        $absensi->name = $request->name;
+        $absensi->class = $request->class;
+        $absensi->date = $request->date;
+        $absensi->information = $request->information;
+        $absensi->photo = $photoPath; // Simpan path foto
+        $absensi->save();
 
         return response()->json($absensi, 201);
     }
@@ -41,6 +51,7 @@ class AbsensiController extends Controller
             'class' => 'required|string',
             'date' => 'required|date',
             'information' => 'required|string',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $absensi = Absensi::findOrFail($id);

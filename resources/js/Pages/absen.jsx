@@ -17,6 +17,7 @@ export default function Absensi() {
         class: '', 
         date: new Date().toISOString().split('T')[0], // Tanggal hari ini
         information: 'Hadir', // Status kehadiran default
+        photo: null, // Tambahkan state untuk foto
     });
 
     const [absensiList, setAbsensiList] = useState(absensiData);
@@ -87,10 +88,15 @@ export default function Absensi() {
         return now >= startTime && now <= endTime;
     };
 
-
+    const handleFileChange = (e) => {
+        setAttendanceData({
+            ...attendanceData,
+            photo: e.target.files[0], // Simpan file foto
+        });
+    };
 
     // Submit absensi ke server
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
     
         if (!isWithinAttendanceTime()) {
@@ -113,48 +119,52 @@ export default function Absensi() {
             return;
         }
 
-        fetch('/siswa/absensi', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfTokenMeta.content,
-            },
-            body: JSON.stringify(attendanceData),
-        })
-            .then((response) => {
-                if (response.ok) {
-                    Swal.fire({
-                        title: 'Berhasil!',
-                        text: 'Absensi berhasil disimpan!',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-                    
-                    setAttendanceData({
-                        name: '',
-                        class: '',
-                        date: new Date().toISOString().split('T')[0],
-                        information: 'Hadir',
-                    });
-                } else {
-                    response.json().then((data) => {
-                        Swal.fire({
-                            title: 'Gagal!',
-                            text: data.errors ? Object.values(data.errors).join(', ') : 'Terjadi kesalahan.',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    });
-                }
-            })
-            .catch(() => {
+        const formData = new FormData();
+        Object.keys(attendanceData).forEach(key => {
+            formData.append(key, attendanceData[key]);
+        });
+
+        try {
+            const response = await fetch('/siswa/absensi', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': csrfTokenMeta.content,
+                },
+            });
+
+            if (response.ok) {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Absensi berhasil disimpan!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+                
+                setAttendanceData({
+                    name: '',
+                    class: '',
+                    date: new Date().toISOString().split('T')[0],
+                    information: 'Hadir',
+                    photo: null,
+                });
+            } else {
+                const data = await response.json();
                 Swal.fire({
                     title: 'Gagal!',
-                    text: 'Gagal menghubungi server.',
+                    text: data.errors ? Object.values(data.errors).join(', ') : 'Terjadi kesalahan.',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: 'Gagal!',
+                text: 'Gagal menghubungi server.',
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
+        }
     };
 
     const handleEdit = (item) => {
@@ -184,12 +194,18 @@ export default function Absensi() {
                         </div>
                         <div style="flex: 1; margin-top: 7px;">
                             <label for="edit-information" style="display: block; font-weight: bold;">Status Kehadiran</label>
-                            <select id="edit-information" class="swal2-input mt-4 w-full text-sm " disabled>
+                            <select id="edit-information" class="swal2-input mt-4 w-full text-sm" disabled>
                                 <option value="Hadir" ${item.information === "Hadir" ? "selected" : ""}>Hadir</option>
                                 <option value="Izin" ${item.information === "Izin" ? "selected" : ""}>Izin</option>
                                 <option value="Sakit" ${item.information === "Sakit" ? "selected" : ""}>Sakit</option>
                                 <option value="Terlambat" ${item.information === "Terlambat" ? "selected" : ""}>Terlambat</option>
                             </select>
+                        </div>
+                    </div>
+                    <div style="gap: 10px; margin-bottom: 10px;">
+                        <div style="flex: 1;">
+                            <label for="edit-photo" style="display: block; font-weight: bold;">Foto</label>
+                            <input type="file" id="edit-photo" class="swal2-input -ml-0 w-full text-sm" accept="image/*">
                         </div>
                     </div>
                 </div>
@@ -201,7 +217,8 @@ export default function Absensi() {
                 const classValue = Swal.getPopup().querySelector('#edit-class').value;
                 const date = Swal.getPopup().querySelector('#edit-date').value;
                 const information = Swal.getPopup().querySelector('#edit-information').value;
-                return { name, class: classValue, date, information };
+                const photo = Swal.getPopup().querySelector('#edit-photo').value;
+                return { name, class: classValue, date, information, photo };
             }
         }).then((result) => {
             if (result.isConfirmed) {
@@ -328,6 +345,10 @@ export default function Absensi() {
                             item.information === 'Sakit' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300' :
                             'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                         }">${item.information}</span>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 font-semibold">Foto:</p>
+                        <img src="/storage/${item.photo}" alt="Foto Absensi" style="width: 100%; max-width: 200px; border-radius: 8px;"/>
                     </div>
                 </div>
             `,
@@ -470,6 +491,19 @@ export default function Absensi() {
                                     </select>
                                 </div>
 
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Foto
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
+                                        required
+                                    />
+                                </div>
+
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
@@ -546,6 +580,9 @@ export default function Absensi() {
                                 <thead className="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Foto
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Nama
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -571,6 +608,13 @@ export default function Absensi() {
                                             transition={{ delay: index * 0.1 }}
                                             className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
                                         >
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                                {item.photo ? (
+                                                    <img src={`/storage/${item.photo}`} alt="Absensi" className="w-16 h-16 object-cover rounded" />
+                                                ) : (
+                                                    <span>Foto tidak ada</span>
+                                                )}
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                                                 {item.name}
                                             </td>
