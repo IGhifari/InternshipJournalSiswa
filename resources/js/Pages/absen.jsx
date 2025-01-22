@@ -223,43 +223,46 @@ export default function Absensi() {
         }).then((result) => {
             if (result.isConfirmed) {
                 const updatedItem = { ...item, ...result.value };
-                updateAbsensiData(updatedItem);
+                updateAbsensiData(updatedItem.id, updatedItem);
             }
         });
     };
 
-    const updateAbsensiData = async (updatedItem) => {
+    const updateAbsensiData = async (id, updatedData) => {
+        const formData = new FormData();
+        formData.append('name', updatedData.name);
+        formData.append('class', updatedData.class);
+        formData.append('date', updatedData.date);
+        formData.append('information', updatedData.information);
+        if (updatedData.photo) {
+            formData.append('photo', updatedData.photo);
+        }
+
         try {
-            const response = await fetch(`/siswa/absensi/${updatedItem.id}`, {
+            const response = await fetch(`/siswa/absensi/${id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 },
-                body: JSON.stringify(updatedItem),
+                body: formData,
             });
 
-            if (response.ok) {
-                setAbsensiList(absensiList.map(item => item.id === updatedItem.id ? updatedItem : item));
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Absensi anda telah berhasil diperbarui.',
-                });
-            } else {
-                const data = await response.json();
-                console.error('Server response:', data);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: data.errors ? Object.values(data.errors).join(', ') : 'Terjadi kesalahan.',
-                });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
+
+            const data = await response.json();
+            setAbsensiList(absensiList.map(item => item.id === id ? updatedData : item));
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Absensi anda telah berhasil diperbarui.',
+            });
         } catch (error) {
             console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
-                title: 'Kesalahan',
+                title: 'Gagal',
                 text: 'Terjadi kesalahan server.',
             });
         }
@@ -674,7 +677,7 @@ export default function Absensi() {
                 </motion.div>
                 <Footer />
             </div>
-            <style jsx>{`
+            <style>{`
                 .tooltip {
                     position: relative;
                 }

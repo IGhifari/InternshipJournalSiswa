@@ -20,28 +20,27 @@ class AbsensiController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
         $data = $request->validate([
             'name' => 'required|string',
             'class' => 'required|string',
             'date' => 'required|date',
             'information' => 'required|string',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
-
-        $photoPath = $request->file('photo')->store('absensi_photos', 'public');
-
     
-        $absensi = new Absensi();
-        $absensi->name = $request->name;
-        $absensi->class = $request->class;
-        $absensi->date = $request->date;
-        $absensi->information = $request->information;
-        $absensi->photo = $photoPath; // Simpan path foto
-        $absensi->save();
-
-        return response()->json($absensi, 201);
+        $absensi = Absensi::findOrFail($id);
+        $absensi->update($data); // Use $data to update the model
+    
+        // Handle photo upload if exists
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('absensi_photos', 'public');
+            $absensi->photo = $photoPath;
+            $absensi->save();
+        }
+    
+        return response()->json($absensi, 200);
     }
 
     public function update(Request $request, $id)
@@ -51,11 +50,17 @@ class AbsensiController extends Controller
             'class' => 'required|string',
             'date' => 'required|date',
             'information' => 'required|string',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
         $absensi = Absensi::findOrFail($id);
         $absensi->update($data);
+
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('absensi_photos', 'public');
+            $absensi->photo = $photoPath;
+            $absensi->save();
+        }
 
         return response()->json($absensi, 200);
     }

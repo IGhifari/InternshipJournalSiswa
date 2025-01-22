@@ -4,12 +4,11 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { CgProfile } from "react-icons/cg";
-import { CgClose } from "react-icons/cg";
-import { BiSolidLogOut } from "react-icons/bi";
-import { FaHome, FaClipboardList, FaBook } from "react-icons/fa";
+import { CgProfile, CgClose } from 'react-icons/cg';
+import { BiSolidLogOut } from 'react-icons/bi';
+import { FaHome, FaClipboardList, FaBook } from 'react-icons/fa';
 
-export default function AuthenticatedLayout({ header, children }) {
+const AuthenticatedLayout = ({ header, children }) => {
     const user = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
@@ -138,4 +137,6 @@ export default function AuthenticatedLayout({ header, children }) {
             <main>{children}</main>
         </div>
     );
-}
+};
+
+export default AuthenticatedLayout;
