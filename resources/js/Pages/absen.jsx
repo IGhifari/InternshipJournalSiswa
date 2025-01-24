@@ -170,10 +170,9 @@ export default function Absensi() {
     const handleEdit = (item) => {
         Swal.fire({
             width: 650,
-            title: 'Edit Absensi Anda',
-            icon: 'info',
+            title: 'Edit Absensi',
             html: `
-                <div style="text-align: left; " class="text-sm">
+                <div style="text-align: left;" class="text-sm">
                     <div style="gap: 10px; margin-bottom: 10px;">
                         <div style="flex: 1;">
                             <label for="edit-name" style="display: block; font-weight: bold;">Nama</label>
@@ -202,28 +201,36 @@ export default function Absensi() {
                             </select>
                         </div>
                     </div>
-                    <div style="gap: 10px; margin-bottom: 10px;">
-                        <div style="flex: 1;">
-                            <label for="edit-photo" style="display: block; font-weight: bold;">Foto</label>
-                            <input type="file" id="edit-photo" class="swal2-input -ml-0 w-full text-sm" accept="image/*">
-                        </div>
+                    <div style="margin-bottom: 10px;">
+                        <label for="edit-photo" style="display: block; font-weight: bold;">Foto</label>
+                        <input type="file" id="edit-photo" class="swal2-input -ml-0 w-full text-sm" accept="image/*">
+                        ${item.photo ? `<img src="/storage/${item.photo}" alt="Current Photo" style="max-width: 200px; margin-top: 10px;">` : ''}
                     </div>
                 </div>
             `,
             focusConfirm: false,
-            showCloseButton: true,
             preConfirm: () => {
                 const name = Swal.getPopup().querySelector('#edit-name').value;
                 const classValue = Swal.getPopup().querySelector('#edit-class').value;
                 const date = Swal.getPopup().querySelector('#edit-date').value;
                 const information = Swal.getPopup().querySelector('#edit-information').value;
-                const photo = Swal.getPopup().querySelector('#edit-photo').value;
-                return { name, class: classValue, date, information, photo };
+                
+                // Validasi input
+                if (!name || !classValue || !date || !information) {
+                    Swal.showValidationMessage('Semua field harus diisi');
+                    return false;
+                }
+
+                return {
+                    name,
+                    class: classValue,
+                    date,
+                    information,
+                };
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                const updatedItem = { ...item, ...result.value };
-                updateAbsensiData(updatedItem.id, updatedItem);
+                updateAbsensiData(item.id, result.value);
             }
         });
     };
@@ -234,13 +241,17 @@ export default function Absensi() {
         formData.append('class', updatedData.class);
         formData.append('date', updatedData.date);
         formData.append('information', updatedData.information);
-        if (updatedData.photo) {
-            formData.append('photo', updatedData.photo);
+        formData.append('_method', 'PUT');
+        
+        // Cek apakah ada file foto baru yang dipilih
+        const photoInput = document.querySelector('#edit-photo');
+        if (photoInput && photoInput.files[0]) {
+            formData.append('photo', photoInput.files[0]);
         }
 
         try {
             const response = await fetch(`/siswa/absensi/${id}`, {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 },
@@ -248,22 +259,29 @@ export default function Absensi() {
             });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            setAbsensiList(absensiList.map(item => item.id === id ? updatedData : item));
+            
+            // Perbarui tampilan setelah berhasil update
+            setAbsensiList(prevList => 
+                prevList.map(item => 
+                    item.id === id ? { ...item, ...data } : item
+                )
+            );
+
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
-                text: 'Absensi anda telah berhasil diperbarui.',
+                text: 'Data absensi berhasil diperbarui',
             });
         } catch (error) {
             console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
-                title: 'Gagal',
-                text: 'Terjadi kesalahan server.',
+                title: 'Gagal!',
+                text: 'Gagal memperbarui data absensi',
             });
         }
     };

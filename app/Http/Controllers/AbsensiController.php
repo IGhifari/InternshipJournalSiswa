@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
+
 class AbsensiController extends Controller
 {
     public function index()
@@ -57,12 +59,17 @@ class AbsensiController extends Controller
         $absensi->update($data);
 
         if ($request->hasFile('photo')) {
+            // Hapus foto lama jika ada
+            if ($absensi->photo) {
+                Storage::disk('public')->delete($absensi->photo);
+            }
+            
             $photoPath = $request->file('photo')->store('absensi_photos', 'public');
             $absensi->photo = $photoPath;
             $absensi->save();
         }
 
-        return response()->json($absensi, 200);
+        return response()->json($absensi);
     }
 
     public function delete(Request $request, $id){
