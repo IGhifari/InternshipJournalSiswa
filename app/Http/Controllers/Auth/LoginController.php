@@ -20,4 +20,12 @@ class LoginController extends Controller
         Auth::logout();
         return redirect()->route('login');
     }
+
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->role === 'admin') {
+            return redirect()->route('filament.admin.pages.dashboard');
+        }
+        return redirect()->route('siswa.dashboard');
+    }
 }

@@ -169,6 +169,7 @@ export default function Absensi() {
 
     const handleEdit = (item) => {
         Swal.fire({
+            showCloseButton: true,
             width: 650,
             title: 'Edit Absensi',
             html: `

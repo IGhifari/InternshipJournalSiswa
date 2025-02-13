@@ -6,10 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\JurnalController;
-use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\StudentController;
-use App\Models\Absensi;
-use App\Providers\Filament\AdminPanelProvider;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -20,18 +17,25 @@ Route::get('/', function () {
     ]);
 })->name('welcome');
 
-Route::group(['prefix' => 'siswa', 'middleware' => ['auth']],function () {
+Route::group(['prefix' => 'siswa', 'middleware' => ['auth']], function () {
+    // Dashboard Siswa
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('siswa.dashboard');
 
-    Route::post('/absensi', [AbsensiController::class, 'store']);
-    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-    Route::put('/absensi/{id}', [AbsensiController::class, 'update']);
-    Route::delete('/absensi/{id}', [AbsensiController::class, 'delete']);
+    // Rute Absensi
+    Route::prefix('absensi')->group(function () {
+        Route::get('/', [AbsensiController::class, 'index'])->name('absensi.index');
+        Route::post('/', [AbsensiController::class, 'store']);
+        Route::put('/{id}', [AbsensiController::class, 'update']);
+        Route::delete('/{id}', [AbsensiController::class, 'delete']);
+    });
 
-    Route::get('/jurnalharian', [JurnalController::class, 'index'])->name('jurnal.index');
-    Route::put('/jurnalharian/{id}', [JurnalController::class, 'update']);
-    Route::post('/jurnalharian', [JurnalController::class, 'store']);
-    Route::delete('/jurnalharian/{id}', [JurnalController::class, 'delete']);
+    // Rute Jurnal
+    Route::prefix('jurnalharian')->group(function () {
+        Route::get('/', [JurnalController::class, 'index'])->name('jurnal.index');
+        Route::post('/', [JurnalController::class, 'store']);
+        Route::put('/{id}', [JurnalController::class, 'update']);
+        Route::delete('/{id}', [JurnalController::class, 'delete']);
+    });
 });
 
 
